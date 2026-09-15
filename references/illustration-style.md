@@ -1,5 +1,7 @@
 # 复古彩色扁平 3D IP 小剧场规范
 
+本文件只用于角色 manifest 中的 `style: retro-flat-3d`。`style: loose-watercolor` 时改读 `loose-watercolor-style.md`，不要混用 3D 材质与松散水彩线条。
+
 ## 定位
 
 为文章、帖子和观点制作简洁的复古彩色扁平 3D 编辑插图。使用当前已确认的个人 IP 作为现实锚点，通过少量日常物件之间清晰的物理关系，把抽象内容转化为摆放在纯白页面上的精致小剧场。

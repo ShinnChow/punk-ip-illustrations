@@ -44,6 +44,13 @@
 
 `character-slug` 使用简短英文小写 kebab-case，只包含字母、数字和连字符。中文角色名保存在 manifest 的 `name` 字段，不把私人路径或照片文件名直接作为 slug。
 
+每个角色绑定一个默认画风：
+
+- `retro-flat-3d`：复古彩色扁平 3D。
+- `loose-watercolor`：松散线描水彩。
+
+画风随角色持久化，切换角色时同时切换画风。旧角色 manifest 没有 `style` 字段时按 `retro-flat-3d` 兼容。
+
 ## 状态机
 
 - `draft`：角色资产已经生成或修订，等待用户确认；不能用于文章插图，不能设为当前角色。
@@ -60,6 +67,7 @@
   "schema_version": 1,
   "slug": "zhang-san",
   "name": "张三",
+  "style": "loose-watercolor",
   "status": "confirmed",
   "revision": 1,
   "created_at": "2026-08-09T00:00:00+00:00",
@@ -86,6 +94,7 @@ python3 scripts/character_registry.py register \
   --root <runtime-root> \
   --slug zhang-san \
   --name "张三" \
+  --style loose-watercolor \
   --sheet <角色设定板路径> \
   --clean-reference <干净人物参考图路径> \
   --spec <人物规范路径>
@@ -122,6 +131,7 @@ python3 scripts/character_registry.py register \
   --root <runtime-root> \
   --slug punk \
   --name "Punk" \
+  --style retro-flat-3d \
   --sheet <skill-root>/assets/punk-character-sheet.png \
   --clean-reference <skill-root>/assets/punk-character-reference-clean.png \
   --spec <skill-root>/references/character-spec.md
@@ -130,6 +140,8 @@ python3 scripts/character_registry.py confirm --root <runtime-root> --slug punk
 ```
 
 内置 Punk 资产来自 Skill 安装目录，只在首次启用或资源版本升级时复制到本地角色包。
+
+`register --style` 可选值只有 `retro-flat-3d` 和 `loose-watercolor`。新建角色必须传入用户已选择的画风；旧调用未传时默认 `retro-flat-3d`，保证向后兼容。
 
 脚本不可运行时，可以手动建立同等目录和 JSON 文件，但必须保持状态规则、资产存在性检查和非覆盖版本规则。
 

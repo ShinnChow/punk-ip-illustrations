@@ -15,6 +15,8 @@ from pathlib import Path
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 MANIFEST_NAME = "character.json"
 CURRENT_NAME = "current-character.json"
+DEFAULT_STYLE = "retro-flat-3d"
+STYLE_CHOICES = (DEFAULT_STYLE, "loose-watercolor")
 
 
 def utc_now() -> str:
@@ -93,6 +95,11 @@ def resolved_manifest(root: Path, slug: str, allow_draft: bool = False) -> dict:
             raise FileNotFoundError(f"Missing {key}: {path}")
         assets[key] = str(path.resolve())
     manifest["assets"] = assets
+    # Manifests created before style selection existed remain compatible.
+    style = manifest.get("style", DEFAULT_STYLE)
+    if style not in STYLE_CHOICES:
+        raise ValueError(f"Character '{slug}' has unsupported style '{style}'")
+    manifest["style"] = style
     manifest["manifest_path"] = str((directory / MANIFEST_NAME).resolve())
     return manifest
 
@@ -103,6 +110,9 @@ def command_register(args: argparse.Namespace) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     old_path = directory / MANIFEST_NAME
     old = load_json(old_path) if old_path.exists() else {}
+    style = args.style or old.get("style", DEFAULT_STYLE)
+    if style not in STYLE_CHOICES:
+        raise ValueError(f"Unsupported style '{style}'")
 
     sheet = copy_versioned(Path(args.sheet), directory, "character-sheet")
     clean = copy_versioned(Path(args.clean_reference), directory, "character-reference-clean")
@@ -113,6 +123,7 @@ def command_register(args: argparse.Namespace) -> None:
         "schema_version": 1,
         "slug": args.slug,
         "name": args.name,
+        "style": style,
         "status": "draft",
         "revision": int(old.get("revision", 0)) + 1,
         "created_at": old.get("created_at", now),
@@ -199,6 +210,7 @@ def command_list(args: argparse.Namespace) -> None:
                 {
                     "slug": item.get("slug"),
                     "name": item.get("name"),
+                    "style": item.get("style", DEFAULT_STYLE),
                     "status": item.get("status"),
                     "revision": item.get("revision"),
                     "active": item.get("slug") == active,
@@ -216,6 +228,7 @@ def build_parser() -> argparse.ArgumentParser:
     register.add_argument("--root", required=True)
     register.add_argument("--slug", required=True)
     register.add_argument("--name", required=True)
+    register.add_argument("--style", choices=STYLE_CHOICES)
     register.add_argument("--sheet", required=True)
     register.add_argument("--clean-reference", required=True)
     register.add_argument("--spec", required=True)

@@ -1,4 +1,6 @@
-# 个人 IP 创建工作流
+# 复古彩色扁平 3D 角色创建工作流
+
+本文件只用于已选择 `retro-flat-3d` 的角色。选择 `loose-watercolor` 时改读 `loose-watercolor-character.md`，不要混合两种角色设定卡的版式或视觉语言。
 
 ## 目录
 
